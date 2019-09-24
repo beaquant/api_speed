@@ -3,5 +3,6 @@
   "pub_key": "",
   "sec_key": "",
   "pair": "BTC_USDT",
+  "amount": 0.1,
   "count": 10
 }

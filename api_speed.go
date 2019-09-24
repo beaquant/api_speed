@@ -31,23 +31,25 @@ type ApiState struct {
 }
 
 type ApiClient struct {
-	API      goex.API
-	Pair     goex.CurrencyPair
-	ApiState ApiState
-	Count    int
-	orders   []goex.Order
+	API         goex.API
+	Pair        goex.CurrencyPair
+	ApiState    ApiState
+	Count       int
+	OrderAmount float64
+	orders      []goex.Order
 }
 
 func (s State) String() string {
 	return fmt.Sprintf("Max:%s, Min:%s, Ave:%s, Total:%s, Count:%d", s.Max.String(), s.Min.String(), s.Ave.String(), s.Total.String(), s.Count)
 }
 
-func NewApiClient(httpClient *http.Client, pubKey, secKey, ex string, pair goex.CurrencyPair, count int) *ApiClient {
+func NewApiClient(httpClient *http.Client, pubKey, secKey, ex string, pair goex.CurrencyPair, amount float64, count int) *ApiClient {
 	return &ApiClient{
-		API:    builder.NewCustomAPIBuilder(httpClient).APIKey(pubKey).APISecretkey(secKey).Build(ex),
-		Pair:   pair,
-		Count:  count,
-		orders: make([]goex.Order, 0),
+		API:         builder.NewCustomAPIBuilder(httpClient).APIKey(pubKey).APISecretkey(secKey).Build(ex),
+		Pair:        pair,
+		Count:       count,
+		OrderAmount: amount,
+		orders:      make([]goex.Order, 0),
 		ApiState: ApiState{
 			PutOrderState: State{
 				Max:   math.MinInt64,
@@ -110,7 +112,7 @@ func (a *ApiClient) PutOrder() {
 	price := ticker.Buy * (1 - 0.095)
 	for i := 0; i < a.Count; i++ {
 		start := time.Now()
-		ord, err := a.API.LimitBuy("0.1", utils.Float64RoundString(price), a.Pair)
+		ord, err := a.API.LimitBuy(utils.Float64RoundString(a.OrderAmount), utils.Float64RoundString(price), a.Pair)
 		if err != nil {
 			fmt.Println("PutOrder LimitBuy err:", err)
 			continue
@@ -124,7 +126,7 @@ func (a *ApiClient) PutOrder() {
 	price = ticker.Sell * (1 + 0.095)
 	for i := 0; i < a.Count; i++ {
 		start := time.Now()
-		ord, err := a.API.LimitSell("0.1", utils.Float64RoundString(price), a.Pair)
+		ord, err := a.API.LimitSell(utils.Float64RoundString(a.OrderAmount), utils.Float64RoundString(price), a.Pair)
 		if err != nil {
 			fmt.Println("PutOrder LimitSell err:", err)
 			continue

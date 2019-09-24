@@ -8,11 +8,12 @@ import (
 )
 
 type Config struct {
-	Exchange string `json:"exchange"`
-	PubKey   string `json:"pub_key"`
-	SecKey   string `json:"sec_key"`
-	Pair     string `json:"pair"`
-	Count    int    `json:"count"`
+	Exchange string  `json:"exchange"`
+	PubKey   string  `json:"pub_key"`
+	SecKey   string  `json:"sec_key"`
+	Pair     string  `json:"pair"`
+	Amount   float64 `json:"amount"`
+	Count    int     `json:"count"`
 }
 
 func main() {
@@ -26,7 +27,7 @@ func main() {
 	json_file.Load("config.json", cfg)
 	fmt.Println("cfg:", *cfg)
 	pair := goex.NewCurrencyPair2(cfg.Pair)
-	apiClient := NewApiClient(http.DefaultClient, cfg.PubKey, cfg.SecKey, cfg.Exchange, pair, cfg.Count)
+	apiClient := NewApiClient(http.DefaultClient, cfg.PubKey, cfg.SecKey, cfg.Exchange, pair, cfg.Amount, cfg.Count)
 
 	apiClient.GetTicker()
 	apiClient.GetDepth()
