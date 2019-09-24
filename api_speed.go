@@ -112,7 +112,21 @@ func (a *ApiClient) PutOrder() {
 		start := time.Now()
 		ord, err := a.API.LimitBuy("0.1", utils.Float64RoundString(price), a.Pair)
 		if err != nil {
-			fmt.Println("PutOrder err:", err)
+			fmt.Println("PutOrder LimitBuy err:", err)
+			continue
+		}
+		cost := time.Since(start)
+		a.updateTime(&a.ApiState.PutOrderState, cost)
+		a.orders = append(a.orders, *ord)
+		time.Sleep(time.Second)
+	}
+
+	price = ticker.Sell * (1 + 0.095)
+	for i := 0; i < a.Count; i++ {
+		start := time.Now()
+		ord, err := a.API.LimitSell("0.1", utils.Float64RoundString(price), a.Pair)
+		if err != nil {
+			fmt.Println("PutOrder LimitSell err:", err)
 			continue
 		}
 		cost := time.Since(start)
